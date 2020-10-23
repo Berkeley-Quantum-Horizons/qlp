@@ -1,8 +1,7 @@
-SECRET_KEY: "(!ov6621kkmg3jlthvk2$#zp5u4qc0w+14+tf=fw_cqpnwt$=)"
+SECRET_KEY: "(!ov6621kkmg3adksafmvk2$#zp5u4qc0w+14+tf=fw_cqpnwt$=)"
 PROJECT_APPS:
   - qlpdb.graph
   - qlpdb.experiment
   - qlpdb.data
-  - qlpdb.tdse
-ALLOWED_HOSTS: []
+ALLOWED_HOSTS: ["*"]
 DEBUG: True
