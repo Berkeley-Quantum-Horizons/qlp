@@ -5,7 +5,7 @@
 
 from django.db import models
 from espressodb.base.models import Base
-from django.contrib.postgres.fields import ArrayField
+from django.db.models import JSONField
 
 
 class Graph(Base):
@@ -23,15 +23,13 @@ class Graph(Base):
     max_edges = models.PositiveSmallIntegerField(
         null=False, help_text="Maximum number of edges per vertex"
     )
-    adjacency = ArrayField(
-        ArrayField(models.PositiveSmallIntegerField(null=False), size=2),
-        help_text="Sorted adjacency matrix of dimension [N, 2]"
-    )
+    adjacency = JSONField(help_text="Sorted adjacency matrix of dimension [N, 2]")
     adjacency_hash = models.TextField(
         null=False,
         blank=False,
-        help_text="md5 hash of adjacency list used for unique constraint"
+        help_text="md5 hash of adjacency list used for unique constraint",
     )
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
