@@ -18,10 +18,10 @@ RUN pip install --upgrade pip --cache-dir $APP_DIR/.pip_cache
 
 ## Install qlp
 WORKDIR $APP_DIR/qlp
-COPY requirements.txt .
-COPY README.md .
-COPY setup.py .
-COPY qlp qlp
+COPY qlp/requirements.txt .
+COPY qlp/README.md .
+COPY qlp/setup.py .
+COPY qlp/qlp qlp
 RUN pip install -r requirements.txt --cache-dir $APP_DIR/.pip_cache
 RUN pip install .
 

@@ -17,6 +17,7 @@ This repository contains two modules:
 ### Install the computation module
 The `qlp` module can be installed via pip:
 ```bash
+cd qlp
 pip install [--user] .
 ```
 
@@ -28,19 +29,11 @@ cd qlpdb
 pip install [--user] .
 ```
 
-### Access publication data
-
-This repository contains all the data presented in [[2009.11970]](https://arxiv.org/abs/2009.11970).
-To access this data, you must host a [PostgreSQL database](https://www.postgresql.org/about/) (other database formats are not sufficient because we have implemented `JSON` and `ArrayFields`).
-We provide more information on the [`qlpdb/README.md`](qlpdb/README.md).
-
 ## Usage
 
 ### `qlp`
 
-The module `qlp` contains two major components:
-
-* The first submodule, `mds`, was used to map the Minimum Dominating Set Problem to annealing Hardware:
+The module `qlp` contains the submodule `mds` which was used to map the Minimum Dominating Set Problem to annealing Hardware:
     ```python
     from qlp.mds.graph_tools as generate_nn_graph
     from qlp.mds.qubo import get_mds_qubo
@@ -59,42 +52,7 @@ The module `qlp` contains two major components:
     E = psi.T@qubo@psi
     ```
     The QUBO serves as input for the annealing hardware.
-* the second submodule, `tdse`, simulates the time-dependent Schrödinger equation for given input (Ising) Hamiltonians:
-    ```python
-    from qlp.mds.mds_qlpdb import QUBO_to_Ising, graph_summary
-    from qlp.tdse import TDSE
 
-    Jij, hi, c = QUBO_to_Ising(qubo.todense().tolist())
-    ising_params = {
-        "Jij": [list(row) for row in Jij],
-        "hi": list(hi),
-        "c": c,
-        "energyscale": annealing_time * 1000.0,
-        "qubo_constant": penalty * nvertices,
-        "penalty": penalty,
-    }
-    graph_params = graph_summary(tag, graph, qubo)
-    ...
-    # Initialize the solver
-    tdse = TDSE(
-        graph_params,  # Graph parameters
-        ising_params,  # Ising Hamiltonian parameters
-        offset_params, # how is the annealing curve implemented
-        solver_params, # numerical parameters for solving the time-dependent equation
-    )
-    # Compute the starting wave density
-    rho = tdse.init_densitymatrix(
-        temp,        # full counting decoherence parameters
-        temp_local,  # local decoherence parameters
-        initial_wavefunction="transverse",
-    )
-    tdse.gamma = gamma              # set FC decoherence rate
-    tdse.gamma_local = gamma_local  # set local decoherence rate
-    # Solve time-dependent Schrödinger equation
-    sol_densitymatrix = tdse.solve_mixed(rho)
-    ```
-
-See also the [`notebooks`](notebooks) folder, especially the [`notebooks/runs`](notebooks/runs), for reproducing computations.
 
 ### `qlpdb`
 
