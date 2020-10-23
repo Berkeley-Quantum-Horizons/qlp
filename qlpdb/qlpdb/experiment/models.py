@@ -40,7 +40,14 @@ class Experiment(Base):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["graph", "machine", "settings_hash", "p", "chain_strength", "tag"],
+                fields=[
+                    "graph",
+                    "machine",
+                    "settings_hash",
+                    "p",
+                    "chain_strength",
+                    "tag",
+                ],
                 name="unique_experiment",
             )
         ]
