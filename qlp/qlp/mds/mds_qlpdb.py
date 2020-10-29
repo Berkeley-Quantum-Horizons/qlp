@@ -153,6 +153,7 @@ def retry_embedding(
         target_min=-0.1,
         target_range=0.12,
         n_tries=100,
+        save=False,
 ):
     def get_embed_min_max_offset(sampler, embedding):
         embed = FixedEmbeddingComposite(sampler, embedding)
@@ -167,18 +168,18 @@ def retry_embedding(
             [offsets[1] for offsets in anneal_offset_ranges[embedding_idx]]
         )
         return embed, min_offset, max_offset
-
-    try:
-        with open(
-                f"../qlp/qlp/mds/embeddings/{graph_tag}_{target_min}_{target_range}_v6.yaml", "r"
-        ) as file:
-            embedding = yaml.safe_load(file)
-        embed, min_offset, max_offset = get_embed_min_max_offset(sampler, embedding)
-        embedding_set = {k: set(embedding[k]) for k in embedding}
-        return embed, embedding, min_offset, max_offset
-    except Exception as e:
-        print(e)
-        pass
+    if save:
+        try:
+            with open(
+                    f"../qlp/qlp/mds/embeddings/{graph_tag}_{target_min}_{target_range}_v6.yaml", "r"
+            ) as file:
+                embedding = yaml.safe_load(file)
+            embed, min_offset, max_offset = get_embed_min_max_offset(sampler, embedding)
+            embedding_set = {k: set(embedding[k]) for k in embedding}
+            return embed, embedding, min_offset, max_offset
+        except Exception as e:
+            print(e)
+            pass
 
     for i in range(n_tries):
         try:
@@ -191,12 +192,13 @@ def retry_embedding(
                     "Try another embedding."
                 )
             else:
-                with open(
-                        f"../qlp/qlp/mds/embeddings/{graph_tag}_{target_min}_{target_range}_v6.yaml",
-                        "w",
-                ) as file:
-                    safe_embed = {int(k): list(embedding[k]) for k in embedding}
-                    yaml.safe_dump(safe_embed, file)
+                if save:
+                    with open(
+                            f"../qlp/qlp/mds/embeddings/{graph_tag}_{target_min}_{target_range}_v6.yaml",
+                            "w",
+                    ) as file:
+                        safe_embed = {int(k): list(embedding[k]) for k in embedding}
+                        yaml.safe_dump(safe_embed, file)
                 return embed, embedding, min_offset, max_offset
         except Exception as e:
             # print(e)
@@ -221,7 +223,7 @@ def plot_anneal_offset(sampler):
 
 
 def find_offset(h, fcn, embedding, offset_min, offset_range):
-    anneal_offset = np.zeros(2048)  # expects full yield 2000Q
+    anneal_offset = np.zeros(5436)  # expects full yield Advantage
     hlist = []
     hkey = []
     for key in h:
