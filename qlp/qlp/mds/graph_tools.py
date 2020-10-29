@@ -192,10 +192,10 @@ def generate_erdos_renyi_graph(n: int, p: float) -> Tuple[Set[Tuple[int, int]], 
         n: Number of vertices
         p: Probability of edge creation
     """
-    disconnected = True
-    while disconnected:
+    connected = False
+    while not connected:
         G = fast_gnp_random_graph(n, p)
-        disconnected = is_connected(G)
+        connected = is_connected(G)
 
     return set(G.edges), f"G({n},{p})"
 

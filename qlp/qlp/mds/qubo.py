@@ -31,7 +31,7 @@ def get_adjacency(graph: Set[Tuple[int]], directed: bool = False) -> dok_matrix:
         nodes.add(v2)
         adj[(v1, v2)] = 1
 
-    nodes = sorted(list(nodes))
+    nodes = {key: idx for idx,key in enumerate(sorted(list(nodes)))}
     n_nodes = len(nodes)
 
     # if nodes != list(range(n_nodes)):
@@ -39,9 +39,9 @@ def get_adjacency(graph: Set[Tuple[int]], directed: bool = False) -> dok_matrix:
 
     adjacency = dok_matrix((n_nodes, n_nodes), dtype=int)
     for (v1, v2), val in adj.items():
-        adjacency[(v1, v2)] = val
+        adjacency[(nodes[v1], nodes[v2])] = val
         if not directed:
-            adjacency[(v2, v1)] = val
+            adjacency[(nodes[v2], nodes[v1])] = val
 
     if not all([val == 1 for val in adjacency.values()]):
         raise KeyError("Double entries in graph")
