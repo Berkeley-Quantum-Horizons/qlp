@@ -14,7 +14,7 @@ from networkx.generators.random_graphs import (
     fast_gnp_random_graph,
     newman_watts_strogatz_graph,
 )
-
+from networkx.algorithms.components import is_connected
 
 def generate_graph(
     n_nodes: int, n_edges: int, n_edge_max: int = 5, seed: Optional[int] = None
@@ -192,7 +192,11 @@ def generate_erdos_renyi_graph(n: int, p: float) -> Tuple[Set[Tuple[int, int]], 
         n: Number of vertices
         p: Probability of edge creation
     """
-    G = fast_gnp_random_graph(n, p)
+    disconnected = True
+    while disconnected:
+        G = fast_gnp_random_graph(n, p)
+        disconnected = is_connected(G)
+
     return set(G.edges), f"G({n},{p})"
 
 

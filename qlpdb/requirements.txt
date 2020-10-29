@@ -6,6 +6,6 @@ espressodb>=1.2
 plotly
 jupyter
 dwave-ocean-sdk
-psycopg2
+psycopg2-binary
 matplotlib
 qlp

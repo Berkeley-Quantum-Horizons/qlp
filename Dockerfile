@@ -31,7 +31,7 @@ WORKDIR $APP_DIR/qlpdb
 COPY qlpdb/requirements.txt .
 COPY qlpdb/setup.py .
 COPY qlpdb/settings.yaml .
-COPY qlpdb/db-config.example.yaml db-config.yaml
+COPY qlpdb/db-config.yaml db-config.yaml
 COPY qlpdb/README.md .
 COPY qlpdb/manage.py .
 COPY qlpdb/qlpdb qlpdb
