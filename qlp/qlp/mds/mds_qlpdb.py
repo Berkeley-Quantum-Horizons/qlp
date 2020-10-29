@@ -223,7 +223,7 @@ def plot_anneal_offset(sampler):
 
 
 def find_offset(h, fcn, embedding, offset_min, offset_range):
-    anneal_offset = np.zeros(5436)  # expects full yield Advantage
+    anneal_offset = np.zeros(5760)  # expects full yield Advantage
     hlist = []
     hkey = []
     for key in h:
