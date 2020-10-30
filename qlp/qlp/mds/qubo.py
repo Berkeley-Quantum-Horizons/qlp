@@ -40,7 +40,7 @@ def get_adjacency(graph: Set[Tuple[int]], directed: bool = False) -> dok_matrix:
     adjacency = dok_matrix((n_nodes, n_nodes), dtype=int)
     for (v1, v2), val in adj.items():
         adjacency[(nodes[v1], nodes[v2])] = val
-        if not directed:
+        if not directed: #huh?
             adjacency[(nodes[v2], nodes[v1])] = val
 
     if not all([val == 1 for val in adjacency.values()]):
