@@ -249,21 +249,40 @@ def insert_result(graph_params, experiment_params, data_params):
     from qlpdb.experiment.models import Experiment as experiment_Experiment
     from qlpdb.data.models import Data as data_Data
 
-    # select or insert row in graph
-    graph, created = graph_Graph.objects.get_or_create(
-        tag=graph_params["tag"],  # Tag for graph type (e.g. Hamming(n,m) or K(n,m))
-        total_vertices=graph_params[
-            "total_vertices"
-        ],  # Total number of vertices in graph
-        total_edges=graph_params["total_edges"],  # Total number of edges in graph
-        max_edges=graph_params["max_edges"],  # Maximum number of edges per vertex
-        adjacency=graph_params[
-            "adjacency"
-        ],  # Sorted adjacency matrix of dimension [N, 2]
-        adjacency_hash=graph_params[
-            "adjacency_hash"
-        ],  # md5 hash of adjacency list used for unique constraint
-    )
+    from networkx.readwrite.edgelist import parse_edgelist
+    from networkx.algorithms.isomorphism import is_isomorphic
+
+    def get_graph_entry(graph_params):
+        # select or insert row in graph
+        adjset0 = [f"{i[0]} {i[1]}" for i in graph_params["adjacency"]]
+        G0 = parse_edgelist(adjset0)
+
+        existing_graphs = graph_Graph.objects.filter(total_vertices=graph_params["total_vertices"])
+        for egraph in existing_graphs:
+            adjset = [f"{edge[0]} {edge[1]}" for edge in egraph.adjacency]
+            Gi = parse_edgelist(adjset)
+            if is_isomorphic(G0, Gi):
+                print("Return exising graph")
+                return egraphgi
+
+        graph, _ = graph_Graph.objects.get_or_create(
+            tag=graph_params["tag"],  # Tag for graph type (e.g. Hamming(n,m) or K(n,m))
+            total_vertices=graph_params[
+                "total_vertices"
+            ],  # Total number of vertices in graph
+            total_edges=graph_params["total_edges"],  # Total number of edges in graph
+            max_edges=graph_params["max_edges"],  # Maximum number of edges per vertex
+            adjacency=graph_params[
+                "adjacency"
+            ],  # Sorted adjacency matrix of dimension [N, 2]
+            adjacency_hash=graph_params[
+                "adjacency_hash"
+            ],  # md5 hash of adjacency list used for unique constraint
+        )
+        print("Creating new graph")
+        return graph
+
+    graph = get_graph_entry(graph_params)
 
     # select or insert row in experiment
     experiment, created = experiment_Experiment.objects.get_or_create(
@@ -349,14 +368,14 @@ def experiment_summary(machine, settings, penalty, chain_strength, tag):
 
 def data_summary(raw, graph_params, experiment_params):
     params = dict()
-    params["spin_config"] = raw.iloc[:, : graph_params["total_qubits"]].values
+    params["spin_config"] = raw.iloc[:, : graph_params["total_qubits"]].values.tolist()
     params["energy"] = (
             raw["energy"].values + experiment_params["p"] * graph_params["total_vertices"]
     )
     #params["chain_break_fraction"] = raw["chain_break_fraction"].values
     params["constraint_satisfaction"] = np.equal(
         params["energy"],
-        np.sum(params["spin_config"][:, : graph_params["total_vertices"]], axis=1),
+        np.sum(np.array(params["spin_config"])[:, : graph_params["total_vertices"]], axis=1),
     )
     return params
 
