@@ -263,7 +263,7 @@ def insert_result(graph_params, experiment_params, data_params):
             Gi = parse_edgelist(adjset)
             if is_isomorphic(G0, Gi):
                 print("Return exising graph")
-                return egraphgi
+                return egraph
 
         graph, _ = graph_Graph.objects.get_or_create(
             tag=graph_params["tag"],  # Tag for graph type (e.g. Hamming(n,m) or K(n,m))
