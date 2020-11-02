@@ -246,7 +246,7 @@ def find_offset(h, fcn, embedding, offset_min, offset_range):
 
 def insert_result(graph_params, experiment_params, data_params):
     from qlpdb.graph.models import Graph as graph_Graph
-    from qlpdb.experiment.models import Experiment as experiment_Experiment
+    from qlpdb.experiment.models import DWaveExperiment as experiment_Experiment
     from qlpdb.data.models import Data as data_Data
 
     from networkx.readwrite.edgelist import parse_edgelist
