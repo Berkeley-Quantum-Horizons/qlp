@@ -10,6 +10,14 @@ from django.db.models import Count, Avg
 
 
 class Experiment(Base):
+    """Experiment base class."""
+
+    tag = None
+
+
+class DWaveExperiment(Experiment):
+    """Specialization to DWave experiments."""
+
     graph = models.ForeignKey(
         "graph.Graph", on_delete=models.CASCADE, help_text=r"Foreign Key to `graph`"
     )
@@ -77,3 +85,51 @@ class Experiment(Base):
             )
         )
         return sorted(list(satisfied_data[:n_entries]), key=lambda el: el["energy"])
+
+
+class HMCExperiment(Experiment):
+    """Class for associating HMC runs with graphs."""
+
+    graph = models.ForeignKey(
+        "graph.Graph", on_delete=models.CASCADE, help_text=r"Foreign Key to `graph`"
+    )
+    beta = models.DecimalField(
+        null=False,
+        max_digits=10,
+        decimal_places=6,
+        help_text="Inverse temperature, 0 to 9999.999999",
+    )
+    thermalization_steps = models.PositiveIntegerField(
+        null=False,
+        help_text="Number of thermalization steps before measuring trajectories.",
+    )
+    evolution_steps = models.PositiveIntegerField(
+        null=False, help_text="Number of evolution steps when used in measurement.",
+    )
+    shift_c = models.DecimalField(
+        null=False, max_digits=10, decimal_places=6, help_text="???, 0 to 9999.999999",
+    )
+    trajectory_length = models.DecimalField(
+        null=False, max_digits=10, decimal_places=6, help_text="???, 0 to 9999.999999",
+    )
+    md_steps = models.PositiveIntegerField(
+        null=False, help_text="Number of molecular dynamics steps.",
+    )
+
+    misc = JSONField(help_text="Dump field for future data. Should be a python dict.")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "graph",
+                    "beta",
+                    "thermalization_steps",
+                    "evolution_steps",
+                    "shift_c",
+                    "trajectory_length",
+                    "md_steps",
+                ],
+                name="unique_hmc_run",
+            )
+        ]
