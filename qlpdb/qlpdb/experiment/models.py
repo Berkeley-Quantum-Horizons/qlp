@@ -77,7 +77,10 @@ class DWaveExperiment(Experiment):
         """
         exp_data = self.data_set.all()
         satisfied_data = (
-            exp_data.filter(constraint_satisfaction=True)
+            exp_data.filter(
+                constraint_satisfaction=True,
+                experiment_ptr__dwaveexperiment__isnull=False,
+            )
             .values("energy")
             .annotate(
                 occurances=Count("energy"),
