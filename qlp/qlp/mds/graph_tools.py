@@ -16,6 +16,7 @@ from networkx.generators.random_graphs import (
 )
 from networkx.algorithms.components import is_connected
 
+
 def generate_graph(
     n_nodes: int, n_edges: int, n_edge_max: int = 5, seed: Optional[int] = None
 ) -> Set[Tuple[int]]:
@@ -350,7 +351,7 @@ def get_plot_mpl(
     G = nx.DiGraph(list(graph)) if directed else nx.Graph(list(graph))
     node_color = (
         ["lightgreen" if node in color_nodes else "white" for node in G.nodes]
-        if color_nodes
+        if color_nodes is not None
         else "white"
     )
 
